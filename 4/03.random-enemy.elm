@@ -86,7 +86,7 @@ input = (,) <~ map inSeconds delta
                                 (map center Window.dimensions)
                                 Mouse.position)
 
-{- #Q
+{- #FIXME
   Random.something doent use Signal anymore.
   https://github.com/elm-lang/core/blob/master/changelog.md#randomness-done-right
 
