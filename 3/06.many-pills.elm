@@ -41,7 +41,8 @@ defaultPill = { pos = (0, hHeight)
 defaultPlayer = { defaultPill | pos <- (0, 0)
                               , col <- Color.black }
 
-{- I cant find where it is described.
+{- #Q
+   I cant find where it is described.
    Why `[Pill]` doesnt work and `List Pill` only works?
 -}
 type alias Game = {player:Pill, pills:List Pill}
