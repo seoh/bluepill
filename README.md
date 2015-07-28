@@ -28,7 +28,7 @@ and open http://localhost:8000
 ### Make index.html
 
 ``` sh
-$ elm-make 5/10.comments-and-refine-codes-and-FINISH.elm --output index.html
+$ elm-make Main.elm --output index.html
 ```
 
 or which elm you want to see.
