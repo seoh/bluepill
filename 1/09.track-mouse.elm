@@ -1,9 +1,9 @@
 import Color
 import Html exposing (text)
-import Graphics.Element exposing (..)
-import Graphics.Collage exposing (..)
+import Graphics.Element exposing (color)
+import Graphics.Collage as C
 import Mouse
-import Signal exposing (..)
+import Signal exposing ((<~))
 import Window
 
 relativeMouse : (Int, Int) -> (Int, Int) -> (Int, Int)
@@ -13,9 +13,9 @@ center : (Int, Int) -> (Int, Int)
 center (w, h) = (w // 2, h // 2)
 
 render (x, y) = color Color.gray
-                  <| collage 400 400 [move (toFloat x, toFloat y)
-                                           <|filled Color.black
-                                           <| circle 15]
+                  <| C.collage 400 400 [C.move (toFloat x, toFloat y)
+                                           <| C.filled Color.black
+                                           <| C.circle 15]
 
 
-main = map render <| relativeMouse (200, 200) <~ Mouse.position
+main = Signal.map render <| relativeMouse (200, 200) <~ Mouse.position

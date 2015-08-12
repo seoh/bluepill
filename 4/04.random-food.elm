@@ -1,11 +1,11 @@
 import Color
 import Html exposing (text)
-import Graphics.Element exposing (..)
-import Graphics.Collage exposing (..)
+import Graphics.Collage as C
+import Graphics.Element as E exposing (Element)
 import Mouse
 import Random
-import Signal exposing (..)
-import Time exposing (..)
+import Signal exposing ((<~), (~))
+import Time exposing (Time, inSeconds, fps, every, second, timestamp)
 import Window
 
 (width, height) = (400, 400)
@@ -74,41 +74,41 @@ stepPill t p = { p | pos <- vecAdd p.pos (vecMulS p.vel t) }
 
 render : (Int, Int) -> Game -> Element
 render (w, h) game =
-  let fromPill {rad, col, pos} = circle rad |> filled col
-                                            |> move pos
+  let fromPill {rad, col, pos} = C.circle rad |> C.filled col
+                                              |> C.move pos
       forms = fromPill game.player :: List.map fromPill game.pills
-  in color Color.lightGray <| container w h middle
-                           <| color Color.white
-                           <| collage width height forms
+  in E.color Color.lightGray <| E.container w h E.middle
+                             <| E.color Color.white
+                             <| C.collage width height forms
 
 delta = fps 30
-input = (,) <~ map inSeconds delta
-             ~ sampleOn delta (map2 relativeMouse
-                                (map center Window.dimensions)
-                                Mouse.position)
+input = (,) <~ Signal.map inSeconds delta
+             ~ Signal.sampleOn delta
+                 (relativeMouse
+                    <~ (Signal.map center Window.dimensions)
+                     ~ Mouse.position)
 
 generator = Random.float 0 1
 randX sig = let stamp = timestamp sig
-                seed = map (\(t, _) -> Random.initialSeed <| round t) stamp
-                rnd = map (Random.generate generator) seed
+                seed  = Signal.map (\(t, _) -> Random.initialSeed <| round t) stamp
+                rnd   = Signal.map (Random.generate generator) seed
                 coord r = (width * r) - hWidth
-            in map (\(r, _) -> coord r) rnd
+            in Signal.map (\(r, _) -> coord r) rnd
 
 {- #FIXME
   Generate twice coz it's depended on time
 -}
 randCol sig = let stamp = timestamp sig
-                  seed = map (\(t, _) -> Random.initialSeed <| round t) stamp
-                  rnd = map (\s ->
+                  seed  = Signal.map (\(t, _) -> Random.initialSeed <| round t) stamp
+                  rnd   = Signal.map (\s ->
                     let (_, seed') =  Random.generate generator s
                     in Random.generate generator seed') seed
                   col r = if r < 0.1 then Color.lightBlue else defaultPill.col
-              in map (\(r, _) -> col r) rnd
+              in Signal.map (\(r, _) -> col r) rnd
 
 interval = (every (second * 2))
-event = mergeMany [ map Tick input
-                  , map2 (\x col -> Add (newPill x col))
-                         (randX interval)
-                         (randCol interval) ]
+event = Signal.mergeMany [
+          Signal.map Tick input,
+          (\x col -> Add (newPill x col)) <~ (randX interval) ~ (randCol interval)]
 
-main = render <~ Window.dimensions ~ (foldp stepGame defaultGame event)
+main = render <~ Window.dimensions ~ (Signal.foldp stepGame defaultGame event)

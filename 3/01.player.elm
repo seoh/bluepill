@@ -1,10 +1,10 @@
 import Color
 import Html exposing (text)
-import Graphics.Element exposing (..)
-import Graphics.Collage exposing (..)
+import Graphics.Collage as C
+import Graphics.Element as E exposing (Element)
 import Mouse
-import Signal exposing (..)
-import Time exposing (..)
+import Signal exposing ((<~), (~))
+import Time exposing (Time, inSeconds, fps)
 import Window
 
 relativeMouse : (Int, Int) -> (Int, Int) -> (Int, Int)
@@ -45,12 +45,12 @@ stepPill t p = { p | pos <- vecAdd p.pos (vecMulS p.vel t) }
 
 render : (Int, Int) -> Game -> Element
 render (w, h) game =
-  let fromPill {rad, col, pos} = circle rad |> filled col
-                                            |> move pos
+  let fromPill {rad, col, pos} = C.circle rad |> C.filled col
+                                              |> C.move pos
       forms = [fromPill game.player, fromPill game.pill]
-  in color Color.lightGray <| container w h middle
-                           <| color Color.white
-                           <| collage 400 400 forms
+  in E.color Color.lightGray <| E.container w h E.middle
+                             <| E.color Color.white
+                             <| C.collage 400 400 forms
 
-sig = map inSeconds (fps 30)
-main = render <~ Window.dimensions ~ foldp stepGame defaultGame sig
+sig = Signal.map inSeconds (fps 30)
+main = render <~ Window.dimensions ~ Signal.foldp stepGame defaultGame sig

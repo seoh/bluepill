@@ -1,8 +1,8 @@
 import Html exposing (text)
-import Graphics.Element exposing (..)
+import Graphics.Element exposing (show)
 import Mouse
 import Window
-import Signal exposing (..) -- no need to write Signal.map from here.
+import Signal exposing ((~), (<~))
 
 relativeMouse : (Int, Int) -> (Int, Int) -> (Int, Int)
 relativeMouse (ox, oy) (x, y) = (x - ox, y - oy)
@@ -22,6 +22,6 @@ then you can use operators for writing simple code.
 
   see also http://elm-lang.org/docs/syntax#mapping
 -}
-main = map show
-         -- (map2 relativeMouse Window.dimensions Mouse.position)
+main = Signal.map show
+        --  (Signal.map2 relativeMouse Window.dimensions Mouse.position)
          (relativeMouse <~ Window.dimensions ~  Mouse.position)

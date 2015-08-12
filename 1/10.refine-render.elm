@@ -1,9 +1,9 @@
 import Color
+import Graphics.Collage as C
+import Graphics.Element exposing (color)
 import Html exposing (text)
-import Graphics.Element exposing (..)
-import Graphics.Collage exposing (..)
 import Mouse
-import Signal exposing (..)
+import Signal exposing ((<~))
 import Window
 
 relativeMouse : (Int, Int) -> (Int, Int) -> (Int, Int)
@@ -13,9 +13,9 @@ center : (Int, Int) -> (Int, Int)
 center (w, h) = (w // 2, h // 2)
 
 render (x, y) =
-  let forms = [ circle 15 |> filled Color.lightBlue
-                          |> move (toFloat x, toFloat y) ]
-  in color Color.gray <| collage 400 400 forms
+  let forms = [ C.circle 15 |> C.filled Color.lightBlue
+                            |> C.move (toFloat x, toFloat y) ]
+  in color Color.gray <| C.collage 400 400 forms
 
 
-main = map render <| relativeMouse (200, 200) <~ Mouse.position
+main = Signal.map render <| relativeMouse (200, 200) <~ Mouse.position

@@ -1,5 +1,5 @@
 import Html exposing (text)
-import Graphics.Element exposing (..)
+import Graphics.Element exposing (show)
 import Mouse
 
 relativeMouse (x,y) = show (x-100, y-100)
